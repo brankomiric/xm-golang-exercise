@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  xm_companies_postgres:
+    image: postgres:latest
+    container_name: xm_companies_postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: RpUndauGArYE
+      POSTGRES_DB: xm-companies-db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./xm_company_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

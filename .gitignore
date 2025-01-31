@@ -29,3 +29,4 @@ cover.out
 dist
 .DS_Store
 mock_*
+xm_company_postgres_data

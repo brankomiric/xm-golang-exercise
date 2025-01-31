@@ -9,7 +9,7 @@ import (
 )
 
 func CreateJWT(username string) (string, error) {
-	jwtSecret := os.Getenv("JwT_SECRET")
+	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {
 		return "", fmt.Errorf("JWT_SECRET environment variable not set")
 	}
