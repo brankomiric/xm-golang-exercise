@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  xm_auth_mongo:
+    image: mongo:latest
+    container_name: xm_auth_mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - xm_auth_mongo_data:/data/db
+
+  xm_auth_mongo_express:
+    image: mongo-express:latest
+    container_name: xm_auth_mongo_admin
+    ports:
+      - 8091:8081
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://xm_auth_mongo:27017
+
+
+volumes:
+  xm_auth_mongo_data:
