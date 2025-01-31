@@ -6,11 +6,14 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 	"xm-company/internal/database"
+	"xm-company/internal/events"
 	"xm-company/server"
 
+	"github.com/segmentio/kafka-go"
 	"github.com/subosito/gotenv"
 )
 
@@ -45,6 +48,18 @@ func main() {
 		log.Fatalf("DB initialization error: %s", err.Error())
 	}
 
+	kafkaBrokersStr := os.Getenv("KAFKA_BROKER_URLS")
+	if kafkaBrokersStr == "" {
+		log.Fatal("Missing Kafka addresses")
+	}
+	kafkaBrokers := strings.Split(kafkaBrokersStr, ",")
+	// Kafka writer setup
+	writer := kafka.NewWriter(kafka.WriterConfig{
+		Brokers:  kafkaBrokers,
+		Topic:    "companies-events-topic",
+		Balancer: &kafka.LeastBytes{},
+	})
+
 	server := &http.Server{
 		Addr:              port,
 		Handler:           server.SetupRouter(db, isDevMode),
@@ -59,6 +74,9 @@ func main() {
 		}
 	}()
 
+	// Register event listeners
+	go events.RegisterEventListeners(writer)
+
 	// Graceful shutdown
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT, os.Interrupt)
@@ -69,6 +87,11 @@ func main() {
 	defer cancel()
 
 	log.Println("Shutting down company service")
+
+	// Closing Kafka writer
+	if err := writer.Close(); err != nil {
+		log.Printf("could not close writer: %v", err.Error())
+	}
 
 	err = server.Shutdown(stopCtx)
 	if err != nil {

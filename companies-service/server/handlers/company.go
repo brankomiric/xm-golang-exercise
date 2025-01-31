@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/gookit/event"
 )
 
 func (h *Handler) Create(ctx *gin.Context) {
@@ -34,6 +35,7 @@ func (h *Handler) Create(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Message: "Failed to add company"})
 		return
 	}
+	event.MustFire("company_created", event.M{"id": result.String()})
 	ctx.JSON(http.StatusOK, UuidResponse{CompanyID: result.String()})
 }
 
@@ -65,6 +67,7 @@ func (h *Handler) Update(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Message: "Failed to update company"})
 		return
 	}
+	event.MustFire("company_updated", event.M{"id": id})
 	ctx.JSON(http.StatusOK, gin.H{"message": "Company updated"})
 }
 
@@ -80,6 +83,7 @@ func (h *Handler) Delete(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Message: "Failed to delete company"})
 		return
 	}
+	event.MustFire("company_deleted", event.M{"id": id})
 	ctx.JSON(http.StatusOK, gin.H{"message": "Company deleted"})
 }
 

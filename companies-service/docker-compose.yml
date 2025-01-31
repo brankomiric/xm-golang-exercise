@@ -1,6 +1,8 @@
 version: '3.8'
 
 services:
+
+  # Database
   xm_companies_postgres:
     image: postgres:latest
     container_name: xm_companies_postgres
@@ -12,6 +14,89 @@ services:
       - "5432:5432"
     volumes:
       - ./xm_company_postgres_data:/var/lib/postgresql/data
+
+  # Kafka
+  zookeeper-1:
+    image: confluentinc/cp-zookeeper:6.2.10
+    hostname: zookeeper-1
+    container_name: zookeeper-1
+    ports:
+      - '32181:32181'
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: localhost:22888:23888
+
+  kafka-1:
+    image: confluentinc/cp-kafka:6.2.10
+    container_name: kafka-1
+    ports:
+      - '9092:9092'
+    depends_on:
+      - zookeeper-1
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:32181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-1:29092,EXTERNAL://localhost:9092
+      KAFKA_MESSAGE_MAX_BYTES: 10485880
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 10485880
+
+  kafka-2:
+    image: confluentinc/cp-kafka:6.2.10
+    container_name: kafka-2
+    ports:
+      - '9093:9093'
+    depends_on:
+      - zookeeper-1
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:32181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-2:29093,EXTERNAL://localhost:9093
+      KAFKA_MESSAGE_MAX_BYTES: 10485880
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 10485880
+
+  kafka-3:
+    image: confluentinc/cp-kafka:6.2.10
+    container_name: kafka-3
+    ports:
+      - '9094:9094'
+    depends_on:
+      - zookeeper-1
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:32181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka-3:29094,EXTERNAL://localhost:9094
+      KAFKA_MESSAGE_MAX_BYTES: 10485880
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 10485880
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    ports:
+      - 8090:8080
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local-1
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-1:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper-1:32181
+      KAFKA_CLUSTERS_1_NAME: local-2
+      KAFKA_CLUSTERS_1_BOOTSTRAPSERVERS: kafka-2:29093
+      KAFKA_CLUSTERS_1_ZOOKEEPER: zookeeper-1:32181
+      KAFKA_CLUSTERS_2_NAME: local-3
+      KAFKA_CLUSTERS_2_BOOTSTRAPSERVERS: kafka-3:29094
+      KAFKA_CLUSTERS_2_ZOOKEEPER: zookeeper-1:32181
 
 volumes:
   postgres_data:
