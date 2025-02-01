@@ -57,7 +57,8 @@ Req body example
 A very simple service that subscribes to Kafka Topic and logs received messages
 
 
-All services, except Consumer, have scripts for running tests, building, linting, mock generation. All services have Alpine build Dockerfiles and docker-compose files for spinning up service dependencies like databases and Kafka. You can start each of the services separately and use the provided endpoints. Just for testing it's easier to start docker-compose-local.yml.
+All services, except Consumer, have scripts for running tests, building, linting, mock generation. All services have Alpine build Dockerfiles and docker-compose files for spinning up service dependencies like databases and Kafka. You can start each of the services separately and use the provided endpoints. If running services individually don't forget to create a _.env_ file containing env vars for each service. There's a _.env.example_ file in each service for reference. 
+Just for testing it's easier to start docker-compose-local.yml.
 
 ## Running all services
 *docker-compose-local.yml* will start all the required databases, run migrations on Postgres, start Kafka and the three services. If starting for the first time give it a minute or two for the migration container to finish before hitting the endpoints.
