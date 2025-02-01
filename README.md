@@ -9,7 +9,7 @@ Newer Go release (1.23 or up) and Docker
 ## Auth Service
 Auth Server with two endpoints for registering and retrieving a JWT. Stores user data in Mongo.
 ### Endpoints
-*POST /register*
+*POST /register*\
 Req body example
 ```json
 {
@@ -17,7 +17,7 @@ Req body example
     "password": "test_password"
 }
 ```
-*POST /login*
+*POST /login*\
 Req body example
 ```json
 {
@@ -28,7 +28,7 @@ Req body example
 
 ## Companies Service
 Has CRUD endpoints for managing Companies stored in a Postgres instance. *runMigrations.sh* script exists for running migrations. Data mutating endpoints check for valid JWT (using middleware) that should be fetched from *Auth Service*. Each operation also fires an event that results in sending a message to Kafka.
-*POST /company*
+*POST /company*\
 Req body example
 ```json
 {
@@ -39,7 +39,7 @@ Req body example
   "type": "Corporations"
 }
 ```
-*PATCH /company/:id*
+*PATCH /company/:id*\
 Req body example
 ```json
 {
@@ -50,7 +50,7 @@ Req body example
   "type": "Corporations"
 }
 ```
-*DELETE /company/:id*
+*DELETE /company/:id*\
 *GET /company/:id*
 
 ## Event Consumer Service
