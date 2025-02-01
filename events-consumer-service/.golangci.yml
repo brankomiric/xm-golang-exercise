@@ -1,0 +1,30 @@
+run:
+  timeout: 5m
+  tests: false
+output:
+  sort-results: true
+linters:
+  disable-all: true
+  enable:
+    - asciicheck
+    - dogsled
+    - durationcheck
+    - errcheck
+    - errorlint
+    - exportloopref
+    - gofmt
+    - goimports
+    - gosec
+    - misspell
+    - nakedret
+    - nilerr
+    - nolintlint
+    - wastedassign
+issues:
+  exclude-rules:
+    - text: "G404:"
+      linters:
+        - gosec
+    - path: _test\.go
+      linters:
+        - gosec
