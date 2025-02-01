@@ -55,7 +55,7 @@ Req body example
 
 ## Event Consumer Service
 A very simple service that subscribes to Kafka Topic and logs received messages
----
+
 
 All services, except Consumer, have scripts for running tests, building, linting, mock generation. All services have Alpine build Dockerfiles and docker-compose files for spinning up service dependencies like databases and Kafka. You can start each of the services separately and use the provided endpoints. Just for testing it's easier to start docker-compose-local.yml.
 
