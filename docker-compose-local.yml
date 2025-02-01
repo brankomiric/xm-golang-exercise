@@ -1,0 +1,122 @@
+version: "3.8"
+
+networks:
+  xm_network:
+
+services:
+  xm_auth:
+    build: ./auth-service
+    container_name: xm_auth
+    environment:
+      - ENV=dev
+      - PORT=:8001
+      - MONGO_CONN_STR=mongodb://xm_auth_mongo:27017
+      - JWT_SECRET=ZE98w02aPMkw
+    ports:
+      - 8001:8001
+    networks:
+      - xm_network
+
+  xm_companies:
+    build: ./companies-service
+    container_name: xm_companies
+    depends_on:
+      xm_companies_postgres:
+        condition: service_healthy
+    environment:
+      - ENV=dev
+      - PORT=:8000
+      - PG_HOST=xm_companies_postgres
+      - PG_PORT=5432
+      - PG_USER=admin
+      - PG_PASSWORD=RpUndauGArYE
+      - PG_DB=xm-companies-db
+      - JWT_SECRET=ZE98w02aPMkw
+      - KAFKA_BROKER_URLS=kafka-1:9092
+    ports:
+      - 8000:8000
+    networks:
+      - xm_network
+
+  xm-companies-migrate:
+    build:
+      context: ./companies-service
+      dockerfile: Dockerfile.migrations
+    entrypoint: ["/app/runMigrations.sh", "postgres://admin:RpUndauGArYE@xm_companies_postgres:5432/xm-companies-db?sslmode=disable"]
+    depends_on:
+      xm_companies_postgres:
+        condition: service_healthy
+    restart: "no"
+    networks:
+      - xm_network
+
+  xm_events_consumer:
+    build: ./events-consumer-service
+    container_name: xm_events_consumer
+    environment:
+      - ENV=dev
+      - KAFKA_BROKER_URLS=kafka-1:9092
+    networks:
+      - xm_network
+
+  xm_auth_mongo:
+    image: mongo:latest
+    container_name: xm_auth_mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - xm_auth_mongo_data:/data/db
+    networks:
+      - xm_network
+
+  xm_companies_postgres:
+    image: postgres:latest
+    container_name: xm_companies_postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: RpUndauGArYE
+      POSTGRES_DB: xm-companies-db
+    ports:
+      - "5432:5432"
+    volumes:
+      - xm_company_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d xm-companies-db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - xm_network
+
+  zookeeper-1:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper-1
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+    networks:
+      - xm_network
+  
+  kafka-1:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka-1
+    depends_on:
+      - zookeeper-1
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - xm_network
+
+volumes:
+  xm_auth_mongo_data:
+  xm_company_postgres_data:

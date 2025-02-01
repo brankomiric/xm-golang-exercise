@@ -20,7 +20,7 @@ const DEV_ENV string = "dev"
 func init() {
 	err := gotenv.Load()
 	if err != nil {
-		log.Fatalf("gotenv.Load() error: %s\n", err.Error())
+		log.Printf("gotenv.Load() error: %s\n", err.Error())
 	}
 }
 

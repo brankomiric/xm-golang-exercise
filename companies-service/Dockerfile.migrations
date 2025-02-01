@@ -1,0 +1,13 @@
+FROM golang:1.23-alpine
+
+RUN apk add --no-cache bash curl
+
+WORKDIR /app
+
+COPY runMigrations.sh /app/runMigrations.sh
+COPY db /app/db
+
+RUN chmod +x /app/runMigrations.sh
+
+# Define entrypoint
+ENTRYPOINT ["/app/runMigrations.sh"]

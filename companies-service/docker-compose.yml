@@ -13,7 +13,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./xm_company_postgres_data:/var/lib/postgresql/data
+      - xm_company_postgres_data:/var/lib/postgresql/data
 
   # Kafka
   zookeeper-1:
@@ -99,4 +99,4 @@ services:
       KAFKA_CLUSTERS_2_ZOOKEEPER: zookeeper-1:32181
 
 volumes:
-  postgres_data:
+  xm_company_postgres_data:

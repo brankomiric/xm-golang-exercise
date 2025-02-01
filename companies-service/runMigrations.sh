@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
 # This script is used to run migrations on the database.
-# Example usage: ./runMigrations.sh "postgres://user:password@localhost:5432/dbname?sslmode=disable"
+# Example usage: ./runMigrations.sh "postgres://user:password@host:5432/dbname?sslmode=disable"
 
 #./runMigrations.sh "postgres://admin:RpUndauGArYE@localhost:5432/xm-companies-db?sslmode=disable"
 

@@ -20,7 +20,7 @@ func RegisterEventListeners(w *kafka.Writer) {
 		if err == nil {
 			err := w.WriteMessages(context.Background(), *message)
 			if err != nil {
-				log.Fatalf("could not write message: %v", err)
+				log.Printf("could not write message: %v", err)
 			}
 		}
 		return nil
@@ -32,7 +32,7 @@ func RegisterEventListeners(w *kafka.Writer) {
 		if err == nil {
 			err := w.WriteMessages(context.Background(), *message)
 			if err != nil {
-				log.Fatalf("could not write message: %v", err)
+				log.Printf("could not write message: %v", err)
 			}
 		}
 		return nil
@@ -44,7 +44,7 @@ func RegisterEventListeners(w *kafka.Writer) {
 		if err == nil {
 			err := w.WriteMessages(context.Background(), *message)
 			if err != nil {
-				log.Fatalf("could not write message: %v", err)
+				log.Printf("could not write message: %v", err)
 			}
 		}
 		return nil

@@ -12,7 +12,7 @@ import (
 // JWTMiddleware validates the JWT token from Authorization header
 func JWTAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		jwtSecret := os.Getenv("JwT_SECRET")
+		jwtSecret := os.Getenv("JWT_SECRET")
 		if jwtSecret == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "JWT_SECRET environment variable not set"})
 			c.Abort()

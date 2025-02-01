@@ -18,7 +18,7 @@ const COMPANIES_TOPIC = "companies-events-topic"
 func init() {
 	err := gotenv.Load()
 	if err != nil {
-		log.Fatalf("gotenv.Load() error: %s\n", err.Error())
+		log.Printf("gotenv.Load() error: %s\n", err.Error())
 	}
 }
 
