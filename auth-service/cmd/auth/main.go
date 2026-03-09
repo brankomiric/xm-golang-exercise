@@ -51,7 +51,7 @@ func main() {
 		log.Printf("Server listening on port %s\n", port)
 		err := server.ListenAndServe()
 		if err != nil {
-			log.Printf("server.ListenAndServe() error: %s\n", err.Error())
+			log.Fatalf("server.ListenAndServe() error: %s\n", err.Error())
 		}
 	}()
 
